@@ -88,7 +88,7 @@ button{font-family:inherit;cursor:pointer}
   border-right:1px solid var(--line-soft);
   display:flex;flex-direction:column;
   transition:width .25s ease;
-  position:relative;z-index:30;
+  position:relative;z-index:45;
   backdrop-filter:blur(10px);
 }
 .sidebar.collapsed{width:var(--sidebar-w-collapsed);flex-basis:var(--sidebar-w-collapsed)}
