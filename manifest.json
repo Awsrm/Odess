@@ -1,0 +1,16 @@
+{
+  "name": "Odess 个人生活管理工作台",
+  "short_name": "Odess",
+  "description": "纯静态 PWA，本地优先的个人生活管理工作台",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#FAF9F5",
+  "theme_color": "#FAF9F5",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
