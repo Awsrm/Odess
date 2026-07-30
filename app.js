@@ -154,7 +154,6 @@
   function applyCollapse() {
     const collapsed = store.get('odess_sidebar_collapsed', false);
     $('#sidebar').classList.toggle('collapsed', collapsed);
-    $('#collapseBtn').textContent = collapsed ? '›' : '‹';
   }
   function toggleCollapse() { store.set('odess_sidebar_collapsed', !store.get('odess_sidebar_collapsed', false)); applyCollapse(); }
   function openDrawer() { $('#sidebar').classList.add('open'); $('#overlay').classList.add('show'); }
@@ -835,7 +834,6 @@
   function init() {
     applyTheme();
     buildNav(); applyCollapse();
-    $('#collapseBtn').onclick = toggleCollapse;
     $('#menuBtn').onclick = openDrawer;
     $('#overlay').onclick = closeDrawer;
     $('#themeToggle').onclick = () => setTheme(store.get('odess_theme', 'night') === 'night' ? 'day' : 'night');
@@ -843,8 +841,35 @@
     window.addEventListener('hashchange', route);
     route();
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+      registerSW();
     }
+  }
+  function registerSW() {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      if (reg.waiting) showUpdateBar(reg.waiting);
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) showUpdateBar(nw);
+        });
+      });
+    }).catch(() => {});
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloading) return;
+      reloading = true;
+      location.reload();
+    });
+  }
+  function showUpdateBar(worker) {
+    if (document.getElementById('odessUpdateBar')) return;
+    const bar = document.createElement('div');
+    bar.id = 'odessUpdateBar';
+    bar.className = 'update-bar';
+    bar.innerHTML = '<span>新版本可用</span><button type="button" id="odessUpdateBtn">更新</button>';
+    document.body.appendChild(bar);
+    document.getElementById('odessUpdateBtn').onclick = () => worker.postMessage('skipWaiting');
   }
   document.addEventListener('DOMContentLoaded', init);
 })();
